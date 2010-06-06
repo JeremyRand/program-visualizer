@@ -13,9 +13,12 @@ FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, int type, QString na
 
     m_treeWidget = parentTreeWidget;
     m_rectF = new QRectF();
+    m_background = new QGraphicsSvgItem("FlowchartItem.svg", this);
+    m_textitem = new QGraphicsSimpleTextItem(this);
     m_type = type;
     m_nameText = nameText;
     m_hasParentItem = false;
+    m_scaled = false;
 
 }
 
@@ -25,9 +28,11 @@ FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, FlowchartItem *paren
     m_parentItem = parentItem;
     m_treeWidget = parentTreeWidget;
     m_rectF = new QRectF();
+    m_background = new QGraphicsSvgItem("FlowchartItem.svg", this);
     m_type = type;
     m_nameText = nameText;
     m_hasParentItem = true;
+    m_scaled = false;
 }
 
 FlowchartItem::~FlowchartItem()
@@ -125,12 +130,33 @@ void FlowchartItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    //static bool scaled;
+    double xscale;
 
     /*Determine size of rectangle needed based on length of text*/
     QRectF boundingRect;
     boundingRect = painter->boundingRect(*m_rectF, Qt::AlignCenter, m_nameText);
+
     m_rectF->setWidth(boundingRect.width() + 5);
     m_rectF->setHeight(boundingRect.height());
+
+    //m_background->scale((boundingRect.width()+5.0)/50.0, boundingRect.height()/50.0);
+
+    //m_background->setTransformOriginPoint(-5, -5);
+    //m_background->scale((boundingRect.width()+5.0)/50.0, 1.0);
+
+    if(! m_scaled)
+    {
+    //m_background->scale(1.0/xscale, 1.0);
+        //xscale = (boundingRect.width()+5.0)/m_background->boundingRect().width();
+        xscale = (boundingRect.width()+5.0)/50.0;
+        m_background->scale(xscale, 1.0);
+        m_scaled = true;
+    }
+
+    //m_background->setTransform(QTransform::fromScale((boundingRect.width()+5.0)/50.0, 1.0), true);
+
+    m_background->setZValue(-1);
 
      /*Use size and location to create connection points for visualization*/
     m_leftConnectionPoint.setX((m_rectF->topLeft().x() + m_rectF->bottomLeft().x())/2);
@@ -139,8 +165,14 @@ void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     m_rightConnectionPoint.setX((m_rectF->topRight().x() + m_rectF->bottomRight().x())/2);
     m_rightConnectionPoint.setY((m_rectF->topRight().y() + m_rectF->bottomRight().y())/2);
 
-    painter->drawRect(*m_rectF);
-    painter->drawText(*m_rectF, m_nameText);
+    //painter->drawRect(*m_rectF);
+
+    //m_background->paint(painter, option, widget);
+
+    //painter->drawText(*m_rectF, m_nameText);
+    m_textitem->setText(m_nameText);
+    m_textitem->setPos(15, 15);
+    m_textitem->setZValue(2);
 }
 
 QRectF FlowchartItem::boundingRect() const

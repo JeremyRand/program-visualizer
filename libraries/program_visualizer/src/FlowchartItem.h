@@ -7,6 +7,9 @@
 #include <QGraphicsItem>
 #include <QPainter>
 
+#include <QGraphicsSimpleTextItem>
+#include <QtSvg/QGraphicsSvgItem>
+
 #include "BrowserItem.h"
 
 class FlowchartItem : public QGraphicsItem
@@ -41,12 +44,15 @@ private:
     QString m_itemText;
     QTreeWidget *m_treeWidget;
     QRectF *m_rectF;
+    QGraphicsSvgItem *m_background;
+    QGraphicsSimpleTextItem *m_textitem;
     QPointF m_leftConnectionPoint;
     QPointF m_rightConnectionPoint;
     int m_type;
     int m_level;
     int m_numberOfChildren;
     bool m_hasParentItem;
+    bool m_scaled;
 
     /*Pure virtual function from QGraphicsItem that must be reimplemented*/
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
