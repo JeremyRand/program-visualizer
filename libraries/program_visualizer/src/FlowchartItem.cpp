@@ -130,7 +130,6 @@ void FlowchartItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    //static bool scaled;
     double xscale;
 
     /*Determine size of rectangle needed based on length of text*/
@@ -140,11 +139,6 @@ void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
     m_rectF->setWidth(boundingRect.width() + 5);
     m_rectF->setHeight(boundingRect.height());
 
-    //m_background->scale((boundingRect.width()+5.0)/50.0, boundingRect.height()/50.0);
-
-    //m_background->setTransformOriginPoint(-5, -5);
-    //m_background->scale((boundingRect.width()+5.0)/50.0, 1.0);
-
     if(! m_scaled)
     {
     //m_background->scale(1.0/xscale, 1.0);
@@ -153,8 +147,6 @@ void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         m_background->scale(xscale, 1.0);
         m_scaled = true;
     }
-
-    //m_background->setTransform(QTransform::fromScale((boundingRect.width()+5.0)/50.0, 1.0), true);
 
     m_background->setZValue(-1);
 
