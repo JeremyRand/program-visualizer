@@ -29,6 +29,7 @@ FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, FlowchartItem *paren
     m_treeWidget = parentTreeWidget;
     m_rectF = new QRectF();
     m_background = new QGraphicsSvgItem("FlowchartItem.svg", this);
+    m_textitem = new QGraphicsSimpleTextItem(this);
     m_type = type;
     m_nameText = nameText;
     m_hasParentItem = true;
@@ -148,6 +149,10 @@ void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
         m_scaled = true;
     }
 
+    // This fixes the spacing of flowchart items... or maybe not
+    //m_rectF->setWidth(m_background->boundingRect().width());
+    //m_rectF->setHeight(m_background->boundingRect().height());
+
     m_background->setZValue(-1);
 
      /*Use size and location to create connection points for visualization*/
@@ -169,5 +174,6 @@ void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *opt
 
 QRectF FlowchartItem::boundingRect() const
 {
-   return *m_rectF;
+   // return *m_rectF;
+    return m_background->boundingRect();
 }

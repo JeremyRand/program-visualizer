@@ -53,7 +53,7 @@ void FunctionItem::createFlowchart()
     //Temporary code just to display the items
     for(i = 0; i < m_flowchartList->length(); i++)
     {
-        currentY = currentY + 20;
+        currentY = currentY + /*m_flowchartList->at(i)->rectF()->height()*/ 50 + 5; // was 20 before SVG background was added
         m_flowchartList->at(i)->setLocation(100*m_flowchartList->at(i)->level(), currentY);
     }
 
