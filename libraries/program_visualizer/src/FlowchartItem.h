@@ -9,6 +9,7 @@
 
 #include <QGraphicsSimpleTextItem>
 #include <QtSvg/QGraphicsSvgItem>
+#include <QtSvg/QSvgRenderer>
 
 #include "BrowserItem.h"
 
@@ -44,7 +45,8 @@ private:
     QString m_itemText;
     QTreeWidget *m_treeWidget;
     QRectF *m_rectF;
-    QGraphicsSvgItem *m_background;
+    QSvgRenderer *m_svgGraphics;
+    QGraphicsSvgItem *m_background, *m_backgroundLeft, *m_backgroundRight;
     QGraphicsSimpleTextItem *m_textitem;
     QPointF m_leftConnectionPoint;
     QPointF m_rightConnectionPoint;
