@@ -24,9 +24,14 @@ public:
     ~FlowchartItem();
 
     FlowchartItem* parentItem();
+    FlowchartItem* previousItem();
+    int previousItemsTillLevel(int  target_level);
     BrowserItem* browserItem();
     QString nameText();
     QString itemText();
+    QString itemType();
+    bool isFunctionCall();
+    QString functionName();
     QPointF leftConnectionPoint();
     QPointF rightConnectionPoint();
     QRectF* rectF();
@@ -35,18 +40,27 @@ public:
     int numberOfChildren();
     void setNumberOfChildren(int number);
     void createBrowserItem();
+    void setNameText(QString name);
+    void setItemType(QString type);
+    void setIsFunctionCall(bool isFunctionCall);
     void setItemText(QString text);
+    void setFunctionName(QString functionName);
     void setLocation(float topLeftX, float topLeftY);
+    void setPreviousItem(FlowchartItem*);
 
 private:
     FlowchartItem *m_parentItem;
+    FlowchartItem *m_previousItem;
     BrowserItem *m_browserItem;
     QString m_nameText;
     QString m_itemText;
+    QString m_itemType;
+    bool m_isFunctionCall;
+    QString m_functionName;
     QTreeWidget *m_treeWidget;
     QRectF *m_rectF;
     QSvgRenderer *m_svgGraphics;
-    QGraphicsSvgItem *m_background, *m_backgroundLeft, *m_backgroundRight;
+    QGraphicsSvgItem *m_background, *m_backgroundLeft, *m_backgroundRight, *m_toParentArrow, *m_fromParentArrow, *m_fromPreviousArrow, *m_fromPreviousBlockArrowBottom, *m_fromPreviousBlockArrowLine;
     QGraphicsSimpleTextItem *m_textitem;
     QPointF m_leftConnectionPoint;
     QPointF m_rightConnectionPoint;
@@ -55,6 +69,7 @@ private:
     int m_numberOfChildren;
     bool m_hasParentItem;
     bool m_scaled;
+    double m_xscale;
 
     /*Pure virtual function from QGraphicsItem that must be reimplemented*/
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
