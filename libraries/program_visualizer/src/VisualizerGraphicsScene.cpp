@@ -4,8 +4,4 @@ VisualizerGraphicsScene::VisualizerGraphicsScene(QObject *parent) : QGraphicsSce
 {
 }
 
-void VisualizerGraphicsScene::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-}
-
 //can redefine Event functions in this class.

@@ -1,10 +1,10 @@
 /********************************************************************************
-** Form generated from reading ui file 'ProgramVisualizer.ui'
+** Form generated from reading UI file 'ProgramVisualizer.ui'
 **
-** Created: Tue Jun 1 14:21:23 2010
-**      by: Qt User Interface Compiler version 4.5.2
+** Created: Wed Jun 9 21:15:42 2010
+**      by: Qt User Interface Compiler version 4.6.2
 **
-** WARNING! All changes made in this file will be lost when recompiling ui file!
+** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
 
 #ifndef UI_PROGRAMVISUALIZER_H
@@ -20,7 +20,7 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QPushButton>
-#include <QtGui/QTextBrowser>
+#include <QtGui/QTextEdit>
 #include <QtGui/QTreeWidget>
 #include <QtGui/QWidget>
 
@@ -31,15 +31,17 @@ class Ui_ProgramVisualizer
 public:
     QGraphicsView *viewer;
     QTreeWidget *treeWidget;
-    QTextBrowser *textBrowser;
+    QTextEdit *textEdit;
     QLabel *treeWidgetLabel;
-    QLabel *textBrowserLabel;
+    QLabel *textEditLabel;
     QLabel *viewerLabel;
     QLabel *functionSelectorLabel;
     QComboBox *functionSelector;
     QPushButton *Refresh;
     QFrame *line;
-    QPushButton *Update;
+    QPushButton *updateSourceFile;
+    QPushButton *jumpTo;
+    QPushButton *changeFunction;
 
     void setupUi(QWidget *ProgramVisualizer)
     {
@@ -59,19 +61,19 @@ public:
         treeWidget->setFrameShape(QFrame::StyledPanel);
         treeWidget->setFrameShadow(QFrame::Sunken);
         treeWidget->header()->setVisible(false);
-        textBrowser = new QTextBrowser(ProgramVisualizer);
-        textBrowser->setObjectName(QString::fromUtf8("textBrowser"));
-        textBrowser->setGeometry(QRect(10, 470, 1061, 151));
+        textEdit = new QTextEdit(ProgramVisualizer);
+        textEdit->setObjectName(QString::fromUtf8("textEdit"));
+        textEdit->setGeometry(QRect(10, 470, 1061, 151));
         treeWidgetLabel = new QLabel(ProgramVisualizer);
         treeWidgetLabel->setObjectName(QString::fromUtf8("treeWidgetLabel"));
         treeWidgetLabel->setGeometry(QRect(10, 390, 111, 31));
         QFont font;
         font.setPointSize(12);
         treeWidgetLabel->setFont(font);
-        textBrowserLabel = new QLabel(ProgramVisualizer);
-        textBrowserLabel->setObjectName(QString::fromUtf8("textBrowserLabel"));
-        textBrowserLabel->setGeometry(QRect(10, 440, 201, 31));
-        textBrowserLabel->setFont(font);
+        textEditLabel = new QLabel(ProgramVisualizer);
+        textEditLabel->setObjectName(QString::fromUtf8("textEditLabel"));
+        textEditLabel->setGeometry(QRect(10, 440, 201, 31));
+        textEditLabel->setFont(font);
         viewerLabel = new QLabel(ProgramVisualizer);
         viewerLabel->setObjectName(QString::fromUtf8("viewerLabel"));
         viewerLabel->setGeometry(QRect(300, 390, 131, 31));
@@ -91,9 +93,19 @@ public:
         line->setGeometry(QRect(10, 420, 1061, 20));
         line->setFrameShape(QFrame::HLine);
         line->setFrameShadow(QFrame::Sunken);
-        Update = new QPushButton(ProgramVisualizer);
-        Update->setObjectName(QString::fromUtf8("Update"));
-        Update->setGeometry(QRect(220, 440, 101, 21));
+        updateSourceFile = new QPushButton(ProgramVisualizer);
+        updateSourceFile->setObjectName(QString::fromUtf8("updateSourceFile"));
+        updateSourceFile->setEnabled(false);
+        updateSourceFile->setGeometry(QRect(410, 440, 111, 21));
+        jumpTo = new QPushButton(ProgramVisualizer);
+        jumpTo->setObjectName(QString::fromUtf8("jumpTo"));
+        jumpTo->setGeometry(QRect(240, 440, 111, 21));
+        changeFunction = new QPushButton(ProgramVisualizer);
+        changeFunction->setObjectName(QString::fromUtf8("changeFunction"));
+        changeFunction->setGeometry(QRect(580, 440, 111, 21));
+        changeFunction->setAutoDefault(false);
+        changeFunction->setDefault(false);
+        changeFunction->setFlat(false);
 
         retranslateUi(ProgramVisualizer);
 
@@ -108,7 +120,7 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Program Browser</span></p></body></html>", 0, QApplication::UnicodeUTF8));
-        textBrowserLabel->setText(QApplication::translate("ProgramVisualizer", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+        textEditLabel->setText(QApplication::translate("ProgramVisualizer", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
@@ -120,8 +132,18 @@ public:
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt; font-weight:600;\">Program Visualization</span></p></body></html>", 0, QApplication::UnicodeUTF8));
         functionSelectorLabel->setText(QApplication::translate("ProgramVisualizer", "Function Displayed:", 0, QApplication::UnicodeUTF8));
         Refresh->setText(QApplication::translate("ProgramVisualizer", "Refresh", 0, QApplication::UnicodeUTF8));
-        Update->setText(QApplication::translate("ProgramVisualizer", "Update Source File", 0, QApplication::UnicodeUTF8));
-        Q_UNUSED(ProgramVisualizer);
+#ifndef QT_NO_WHATSTHIS
+        updateSourceFile->setWhatsThis(QApplication::translate("ProgramVisualizer", "Update the main source file to reflect changes made in the text editor", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_WHATSTHIS
+        updateSourceFile->setText(QApplication::translate("ProgramVisualizer", "Update Source File", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_WHATSTHIS
+        jumpTo->setWhatsThis(QApplication::translate("ProgramVisualizer", "Move cursor in main editor window to the location of this item", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_WHATSTHIS
+        jumpTo->setText(QApplication::translate("ProgramVisualizer", "Take Me There!", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_WHATSTHIS
+        changeFunction->setWhatsThis(QApplication::translate("ProgramVisualizer", "Make the function called in this item the currently displayed function", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_WHATSTHIS
+        changeFunction->setText(QApplication::translate("ProgramVisualizer", "Display This Function", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

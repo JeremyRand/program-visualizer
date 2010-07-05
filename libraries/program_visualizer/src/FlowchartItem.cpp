@@ -2,16 +2,22 @@
 
 
 FlowchartItem::FlowchartItem() : QGraphicsItem(0), m_parentItem(0), m_browserItem(),
-    m_treeWidget(0), m_level(0), m_numberOfChildren(0)
+	m_treeWidget(0), m_posInText(0), m_beginItemTextPos(0), m_endItemTextPos(0), m_level(0), m_numberOfChildren(0)
 {
+    m_itemTextDocument = new QTextDocument();
+    m_isHighlighted = false;
+    m_hasParentItem = false;
 
+    setAcceptsHoverEvents(true);
 }
 
 FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, int type, QString nameText):
-    QGraphicsItem(0), m_parentItem(0), m_browserItem(0), m_treeWidget(0), m_level(0), m_numberOfChildren(0)
+QGraphicsItem(0), m_parentItem(0), m_browserItem(0), m_treeWidget(0), m_posInText(0),
+    m_beginItemTextPos(0), m_endItemTextPos(0), m_level(0), m_numberOfChildren(0)
 {
 
     m_treeWidget = parentTreeWidget;
+	m_itemTextDocument = new QTextDocument();
     m_rectF = new QRectF();
     m_svgGraphics = new QSvgRenderer(QLatin1String("FlowchartItem.svg"));
 
@@ -51,17 +57,23 @@ FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, int type, QString na
 
     m_type = type;
     m_nameText = nameText;
+	m_isHighlighted = false;
     m_hasParentItem = false;
     m_isFunctionCall = false;
     m_scaled = false;
 
+    m_collapsed = false;
+	
+	setAcceptsHoverEvents(true);
 }
 
 FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, FlowchartItem *parentItem, int type, QString nameText):
-        QGraphicsItem(0), m_parentItem(0), m_browserItem(0), m_treeWidget(0), m_level(0), m_numberOfChildren(0)
+        QGraphicsItem(0), m_parentItem(0), m_browserItem(0), m_treeWidget(0), m_posInText(0),
+        m_beginItemTextPos(0), m_endItemTextPos(0), m_level(0), m_numberOfChildren(0)
 {
     m_parentItem = parentItem;
     m_treeWidget = parentTreeWidget;
+	m_itemTextDocument = new QTextDocument();
     m_rectF = new QRectF();
     m_svgGraphics = new QSvgRenderer(QLatin1String("FlowchartItem.svg"));
 
@@ -101,9 +113,14 @@ FlowchartItem::FlowchartItem(QTreeWidget *parentTreeWidget, FlowchartItem *paren
 
     m_type = type;
     m_nameText = nameText;
+	m_isHighlighted = false;
     m_hasParentItem = true;
     m_isFunctionCall = false;
     m_scaled = false;
+
+    m_collapsed = false;
+	
+	setAcceptsHoverEvents(true);
 }
 
 FlowchartItem::~FlowchartItem()
@@ -131,9 +148,37 @@ int FlowchartItem::previousItemsTillLevel(int target_level)
     return previousItem()->previousItemsTillLevel(target_level) + 1;
 }
 
+int FlowchartItem::previousHiddenItems()
+{
+    if(!previousItem())
+        return getHidden() ? 1 : 0;
+
+    return previousItem()->previousHiddenItems() + (getHidden() ? 1 : 0);
+}
+
 BrowserItem* FlowchartItem::browserItem()
 {
     return m_browserItem;
+}
+
+int FlowchartItem::posInText()
+{
+    return m_posInText;
+}
+
+int FlowchartItem::beginItemTextPos()
+{
+    return m_beginItemTextPos;
+}
+
+int FlowchartItem::endItemTextPos()
+{
+    return m_endItemTextPos;
+}
+
+int FlowchartItem::level()
+{
+    return m_level;
 }
 
 QString FlowchartItem::nameText()
@@ -146,14 +191,29 @@ QString FlowchartItem::itemText()
     return m_itemText;
 }
 
+QTextDocument* FlowchartItem::itemTextDocument()
+{
+    return m_itemTextDocument;
+}
+
 QString FlowchartItem::itemType()
 {
     return m_itemType;
 }
 
+bool FlowchartItem::isHighlighted()
+{
+    return m_isHighlighted;
+}
+
 bool FlowchartItem::isFunctionCall()
 {
     return m_isFunctionCall;
+}
+
+bool FlowchartItem::hasParentItem()
+{
+    return m_hasParentItem;
 }
 
 QString FlowchartItem::functionName()
@@ -176,9 +236,19 @@ QRectF* FlowchartItem::rectF()
     return m_rectF;
 }
 
-int FlowchartItem::level()
+void FlowchartItem::setPosInText(int pos)
 {
-    return m_level;
+    m_posInText = pos;
+}
+
+void FlowchartItem::setBeginItemTextPos(int pos)
+{
+    m_beginItemTextPos = pos;
+}
+
+void FlowchartItem::setEndItemTextPos(int pos)
+{
+    m_endItemTextPos = pos;
 }
 
 void FlowchartItem::setLevel(int level)
@@ -219,6 +289,11 @@ void FlowchartItem::setItemType(QString text)
     m_itemType = text;
 }
 
+void FlowchartItem::setHighlighted(bool highlight)
+{
+    m_isHighlighted = highlight;
+}
+
 void FlowchartItem::setIsFunctionCall(bool isFunctionCall)
 {
     m_isFunctionCall = isFunctionCall;
@@ -243,6 +318,24 @@ void FlowchartItem::setLocation(float topLeftX, float topLeftY)
 
 }
 
+void FlowchartItem::setCollapsed(bool collapsed)
+{
+    m_collapsed = collapsed;
+}
+
+bool FlowchartItem::getCollapsed()
+{
+    return m_collapsed;
+}
+
+bool FlowchartItem::getHidden()
+{
+    if(! m_parentItem)
+        return false;
+
+    return m_parentItem->getHidden() || m_parentItem->getCollapsed();
+}
+
 void FlowchartItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     /*Clear old selection in the QTreeWidget*/
@@ -251,12 +344,34 @@ void FlowchartItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
     /*Set new selection -- this causes the QTreeWidget to emit a signal to ProgramVisualizer*/
     m_browserItem->setSelected(true);
 
+    m_collapsed = !m_collapsed;
+
     /*Show changes on graphics scene*/
    // update(*m_rectF);
 }
 
+void FlowchartItem::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
+{
+    m_browserItem->setBackgroundColor(0, Qt::blue);
+}
+
+void FlowchartItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
+{
+    m_browserItem->setBackgroundColor(0, Qt::white);
+}
+
 void FlowchartItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
+    static int old_hidden_num;
+    int current_hidden_num = previousHiddenItems();
+
+    int hidden_diff = current_hidden_num - old_hidden_num;
+    old_hidden_num = current_hidden_num;
+
+    this->setLocation(m_rectF->left(), m_rectF->top()-hidden_diff*55);
+    //setY(y() - hidden_diff * 55);
+
+    setVisible(! getHidden());
 
     //double xscale;
 
